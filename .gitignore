@@ -3,3 +3,5 @@ __pycache__/
 *.pyc
 .env
 .ipynb_checkpoints/
+# Power BI (cache e configuracao local)
+**/.pbi/

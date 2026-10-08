@@ -1,0 +1,52 @@
+table calendario
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: Ano
+
+	column 'Mês Nº'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: Mês Nº
+
+	column Mês
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Mês
+		sortByColumn: 'Mês Nº'
+
+	column 'Ano-Mês'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ano-Mês
+
+	partition calendario = m
+		mode: import
+		source =
+				let
+					StartDate = #date(2016, 9, 1),
+					EndDate = #date(2018, 10, 31),
+					Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
+					AsTable = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}, null, ExtraValues.Error),
+					Typed = Table.TransformColumnTypes(AsTable, {{"Date", type date}}),
+					Year = Table.AddColumn(Typed, "Ano", each Date.Year([Date]), Int64.Type),
+					MonthNumber = Table.AddColumn(Year, "Mês Nº", each Date.Month([Date]), Int64.Type),
+					MonthName = Table.AddColumn(MonthNumber, "Mês", each Text.Proper(Date.MonthName([Date], "pt-BR")), type text),
+					YearMonth = Table.AddColumn(MonthName, "Ano-Mês", each Date.ToText([Date], "yyyy-MM"), type text)
+				in
+					YearMonth
+
+	annotation PBI_ResultType = Table

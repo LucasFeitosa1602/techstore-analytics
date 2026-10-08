@@ -1,0 +1,41 @@
+table order_payments
+
+	column order_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: order_id
+
+	column payment_sequential
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: payment_sequential
+
+	column payment_type
+		dataType: string
+		summarizeBy: none
+		sourceColumn: payment_type
+
+	column payment_installments
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: payment_installments
+
+	column payment_value
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: payment_value
+
+	partition order_payments = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents(DataPath & "olist_order_payments_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					Typed = Table.TransformColumnTypes(Promoted, {{"order_id", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", type number}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table

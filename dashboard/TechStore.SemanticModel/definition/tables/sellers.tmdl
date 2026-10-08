@@ -1,0 +1,33 @@
+table sellers
+
+	column seller_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: seller_id
+
+	column seller_zip_code_prefix
+		dataType: string
+		summarizeBy: none
+		sourceColumn: seller_zip_code_prefix
+
+	column seller_city
+		dataType: string
+		summarizeBy: none
+		sourceColumn: seller_city
+
+	column seller_state
+		dataType: string
+		summarizeBy: none
+		sourceColumn: seller_state
+
+	partition sellers = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents(DataPath & "olist_sellers_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					Typed = Table.TransformColumnTypes(Promoted, {{"seller_id", type text}, {"seller_zip_code_prefix", type text}, {"seller_city", type text}, {"seller_state", type text}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table

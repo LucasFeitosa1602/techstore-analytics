@@ -1,0 +1,40 @@
+relationship 8012e5d7-6aba-57cf-849a-1ba1d15ce2ea
+	fromColumn: orders.customer_id
+	toColumn: customers.customer_id
+
+relationship 6710cf4c-3e8c-5c75-bb1b-9881ae45de96
+	fromColumn: order_items.order_id
+	toColumn: orders.order_id
+
+relationship de360e5f-0d7b-5a71-a882-66f29a8e3504
+	fromColumn: order_items.product_id
+	toColumn: products.product_id
+
+relationship 25a0ba98-a6ac-5dff-9685-099b4c50258a
+	fromColumn: order_items.seller_id
+	toColumn: sellers.seller_id
+
+relationship 20df7818-8767-55e4-8a53-ff299e96cb6f
+	fromColumn: order_payments.order_id
+	toColumn: orders.order_id
+
+relationship f3beca67-c48a-506c-99bf-8b4da9f1803b
+	fromColumn: order_reviews.order_id
+	toColumn: orders.order_id
+
+relationship ad6ab1b2-e686-5bd0-8115-6f4bcb575659
+	fromColumn: products.product_category_name
+	toColumn: product_category_translation.product_category_name
+
+relationship 3beda2bf-eef6-5811-aff4-bbea0c7e6db5
+	fromColumn: customers.customer_zip_code_prefix
+	toColumn: geolocation_zip.geolocation_zip_code_prefix
+
+relationship c5b402c5-66c3-528e-a4fc-8c00ab64b315
+	isActive: false
+	fromColumn: sellers.seller_zip_code_prefix
+	toColumn: geolocation_zip.geolocation_zip_code_prefix
+
+relationship 5949868a-0c87-552d-8cce-acbc27fe2bb0
+	fromColumn: orders.order_purchase_date
+	toColumn: calendario.Date

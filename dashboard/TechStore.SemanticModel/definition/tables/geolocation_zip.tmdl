@@ -1,0 +1,46 @@
+table geolocation_zip
+
+	column geolocation_zip_code_prefix
+		dataType: string
+		summarizeBy: none
+		sourceColumn: geolocation_zip_code_prefix
+
+	column geolocation_lat
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: geolocation_lat
+
+	column geolocation_lng
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: geolocation_lng
+
+	column geolocation_city
+		dataType: string
+		summarizeBy: none
+		sourceColumn: geolocation_city
+
+	column geolocation_state
+		dataType: string
+		summarizeBy: none
+		sourceColumn: geolocation_state
+
+	column n_points
+		dataType: int64
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: n_points
+
+	partition geolocation_zip = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents(DataPath & "olist_geolocation_zip_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					Typed = Table.TransformColumnTypes(Promoted, {{"geolocation_zip_code_prefix", type text}, {"geolocation_lat", type number}, {"geolocation_lng", type number}, {"geolocation_city", type text}, {"geolocation_state", type text}, {"n_points", Int64.Type}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table

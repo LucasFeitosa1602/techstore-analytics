@@ -1,0 +1,65 @@
+table products
+
+	column product_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: product_id
+
+	column product_category_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+	column product_name_lenght
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: product_name_lenght
+
+	column product_description_lenght
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: product_description_lenght
+
+	column product_photos_qty
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: product_photos_qty
+
+	column product_weight_g
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: product_weight_g
+
+	column product_length_cm
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: product_length_cm
+
+	column product_height_cm
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: product_height_cm
+
+	column product_width_cm
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: product_width_cm
+
+	partition products = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents(DataPath & "olist_products_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					Typed = Table.TransformColumnTypes(Promoted, {{"product_id", type text}, {"product_category_name", type text}, {"product_name_lenght", type number}, {"product_description_lenght", type number}, {"product_photos_qty", type number}, {"product_weight_g", type number}, {"product_length_cm", type number}, {"product_height_cm", type number}, {"product_width_cm", type number}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table

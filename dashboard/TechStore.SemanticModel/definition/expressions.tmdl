@@ -1,0 +1,4 @@
+expression DataPath = "D:\Projetos DEV\TechStore Analytics\data\processed\" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: f5449da0-554d-5dd3-8891-f85c495b6550
+
+	annotation PBI_ResultType = Text

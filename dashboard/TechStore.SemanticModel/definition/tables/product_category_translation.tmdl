@@ -1,0 +1,23 @@
+table product_category_translation
+
+	column product_category_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: product_category_name
+
+	column product_category_name_english
+		dataType: string
+		summarizeBy: none
+		sourceColumn: product_category_name_english
+
+	partition product_category_translation = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents(DataPath & "product_category_name_translation_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					Typed = Table.TransformColumnTypes(Promoted, {{"product_category_name", type text}, {"product_category_name_english", type text}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table

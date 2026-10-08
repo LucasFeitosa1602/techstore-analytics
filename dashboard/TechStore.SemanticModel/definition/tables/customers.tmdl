@@ -1,0 +1,38 @@
+table customers
+
+	column customer_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_id
+
+	column customer_unique_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_unique_id
+
+	column customer_zip_code_prefix
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_zip_code_prefix
+
+	column customer_city
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_city
+
+	column customer_state
+		dataType: string
+		summarizeBy: none
+		sourceColumn: customer_state
+
+	partition customers = m
+		mode: import
+		source =
+				let
+					Source = Csv.Document(File.Contents(DataPath & "olist_customers_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+					Typed = Table.TransformColumnTypes(Promoted, {{"customer_id", type text}, {"customer_unique_id", type text}, {"customer_zip_code_prefix", type text}, {"customer_city", type text}, {"customer_state", type text}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,15 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+
+ref table customers
+ref table sellers
+ref table products
+ref table product_category_translation
+ref table orders
+ref table order_items
+ref table order_payments
+ref table order_reviews
+ref table geolocation_zip
+ref table calendario
+ref expression DataPath
