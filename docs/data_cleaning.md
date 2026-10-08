@@ -1,6 +1,6 @@
 # 🧹 Documentação do Tratamento de Dados — Olist
 
-Este documento registra o que foi feito na etapa de **profiling e limpeza** dos 9 datasets brutos do e-commerce Olist, as decisões tomadas, como cada tratamento foi validado e quais pontos precisam de atenção nas próximas etapas (carga no Supabase e dashboard).
+Este documento registra o que foi feito na etapa de **profiling e limpeza** dos 9 datasets brutos do e-commerce Olist, as decisões tomadas, como cada tratamento foi validado e quais pontos precisam de atenção nas próximas etapas (dashboard).
 
 > Dicionário das colunas: [`data_dictionary.md`](data_dictionary.md) · KPIs: [`kpis.md`](kpis.md) · Perguntas de negócio: [`business_questions.md`](business_questions.md)
 
@@ -19,7 +19,7 @@ Este documento registra o que foi feito na etapa de **profiling e limpeza** dos 
 
 ```
 data/raw/*.csv ──► notebooks/NN_<tabela>_profiling.ipynb ──► data/processed/*_clean.csv
-  (bruto, nunca alterado)     (profiling → tratamento → validação)      (pronto para o banco)
+  (bruto, nunca alterado)     (profiling → tratamento → validação)      (pronto para o Power BI)
 ```
 
 ### Convenções seguidas em todos os notebooks
@@ -141,7 +141,7 @@ Em cada tabela foram avaliados: valores nulos, linhas duplicadas, duplicidade de
 | Tema | Detalhe |
 |---|---|
 | **Janela de tempo** | Os pedidos de 2016 são raros (set: 4, out: 324, nov: 0, dez: 1) e a base termina em 2018-08 na prática (2018-09: 16 pedidos; 2018-10: 4). Para tendências, a janela sugerida é **2017-01 a 2018-08**. |
-| **Status dos pedidos** | 775 pedidos não têm itens (603 `unavailable`, 164 `canceled`, 5 `created`, 2 `invoiced`, 1 `shipped`) e existem itens ligados a pedidos `canceled` (542). Definir o filtro de status da Receita e do Ticket Médio (sugestão: excluir `canceled` e `unavailable`). |
+| **Status dos pedidos** | 775 pedidos não têm itens (603 `unavailable`, 164 `canceled`, 5 `created`, 2 `invoiced`, 1 `shipped`) e existem itens ligados a pedidos `canceled` (542). Recomendação para a Receita e o Ticket Médio: excluir `canceled` e `unavailable` (ver [`dashboard_design.md`](dashboard_design.md)). |
 | **Join sem agregar** | Um pedido pode ter vários itens, pagamentos e avaliações. Agregar por `order_id` antes de juntar tabelas, senão a receita é duplicada. |
 | **Geolocation** | Usar `olist_geolocation_zip_clean.csv` (1 linha por CEP) nos joins. O join direto com os pontos gera mais de 15 milhões de linhas. |
 | **Avaliação por pedido** | 547 pedidos têm mais de uma avaliação, então agregar por `order_id` antes de calcular a média. |
@@ -150,35 +150,18 @@ Em cada tabela foram avaliados: valores nulos, linhas duplicadas, duplicidade de
 
 ---
 
-## 6. Pontos de atenção para a carga no Supabase
+## 6. Pontos de atenção para o Power BI
 
-Conferidos os CSVs de `data/processed/` contra `database/schema.sql`:
+O Power BI lê os CSVs de `data/processed/` diretamente, sem banco de dados. O projeto em [`dashboard/`](../dashboard/README.md) já trata os pontos abaixo; eles ficam registrados para quem for usar os CSVs de outra forma.
 
-| # | Ponto | Ação sugerida |
+| # | Ponto | Como é tratado |
 |---|---|---|
-| 1 | `order_reviews.review_id` é `PRIMARY KEY` no schema, mas tem 814 repetidos. A carga falha. | Usar `(review_id, order_id)` como chave composta (é única) ou um id sequencial. |
-| 2 | `products` é salvo com valores como `40.0`, `287.0` e `225.0` nas colunas inteiras (`product_name_lenght`, `product_description_lenght`, `product_photos_qty`, `product_weight_g`). O `COPY` do Postgres rejeita `40.0` em colunas `INTEGER` e `SMALLINT`. | Converter essas colunas para inteiro antes de salvar ou na carga. |
-| 3 | O schema de `geolocation` espera os pontos brutos (com id sequencial). Para joins e mapas, a tabela útil é a de 1 linha por CEP. | Criar uma tabela por CEP (`geolocation_zip`, com `geolocation_zip_code_prefix` como chave) e decidir se os 720 mil pontos também entram. |
-| 4 | Não existe FK de `products` para `product_category_translation`. Agora é possível, pois todas as categorias têm tradução. | Adicionar em `constraints.sql`. |
-| 5 | FK de CEP (`customers`/`sellers` → `geolocation`) não pode ser imposta: 279 clientes e 7 vendedores têm CEP sem correspondência. | Manter como relação lógica (join `LEFT`). |
-| 6 | O CEP precisa continuar como texto (`VARCHAR(5)`). | Ao ler os CSVs, usar `dtype=str` nas colunas de CEP. |
-| 7 | O nome da tabela no schema (`product_category_translation`) difere do arquivo (`product_category_name_translation_clean.csv`). | Mapear o arquivo para a tabela na carga. |
-
-Verificados e compatíveis com o schema: tamanhos de texto (maior título de avaliação com 26 caracteres, `VARCHAR(100)`), ausência de nulos nas colunas `NOT NULL`, formato de data `YYYY-MM-DD HH:MM:SS` e unicidade das chaves de `order_items` e `order_payments`.
-
-Mapeamento arquivo → tabela:
-
-| Arquivo em `data/processed/` | Tabela no schema |
-|---|---|
-| `olist_customers_dataset_clean.csv` | `customers` |
-| `olist_sellers_dataset_clean.csv` | `sellers` |
-| `olist_products_dataset_clean.csv` | `products` |
-| `product_category_name_translation_clean.csv` | `product_category_translation` |
-| `olist_orders_dataset_clean.csv` | `orders` |
-| `olist_order_items_dataset_clean.csv` | `order_items` |
-| `olist_order_payments_dataset_clean.csv` | `order_payments` |
-| `olist_order_reviews_dataset_clean.csv` | `order_reviews` |
-| `olist_geolocation_dataset_clean.csv` / `olist_geolocation_zip_clean.csv` | `geolocation` (pontos) / tabela por CEP a criar |
+| 1 | O CEP precisa ser lido como **texto**: como número, 23.995 CEPs de clientes perdem o zero à esquerda. | As colunas de CEP são tipadas como texto no Power Query do projeto. |
+| 2 | Células vazias representam datas ou comentários ausentes (ex.: pedido sem data de entrega). | O Power Query converte vazio em nulo antes de tipar as colunas de data. |
+| 3 | `review_id` se repete em 814 linhas (pedidos diferentes) e `geolocation` não tem chave. | Avaliações se ligam ao pedido por `order_id`; `review_id` não é usado como chave. |
+| 4 | 279 clientes e 7 vendedores têm CEP sem correspondência em `geolocation`. | Aparecem em branco em mapas por CEP. Só a relação `customers` → `geolocation_zip` fica ativa; a de `sellers` fica inativa para evitar caminho ambíguo até `order_items`. |
+| 5 | A tabela de pontos de geolocalização tem 720 mil linhas. | O projeto usa `olist_geolocation_zip_clean.csv` (1 linha por CEP, 19.010 linhas). |
+| 6 | As regras de negócio (janela de tempo, status excluídos, receita, atraso) não estão aplicadas nos dados. | Entram nas medidas DAX e filtros. Ver a seção "Cuidados com os dados" de [`dashboard_design.md`](dashboard_design.md). |
 
 ---
 
@@ -199,8 +182,6 @@ jupyter lab
 
 ## 8. Próximos passos
 
-1. Fechar as definições pendentes dos KPIs (filtro de status e janela de tempo) em [`kpis.md`](kpis.md).
-2. Ajustar o `database/schema.sql` com os pontos da seção 6.
-3. Criar o banco no Supabase e carregar os arquivos de `data/processed/`.
-4. Escrever `indexes.sql` e `views.sql` com os KPIs.
-5. Responder às perguntas de negócio ([`business_questions.md`](business_questions.md)) e montar o dashboard no Power BI.
+1. Abrir [`dashboard/TechStore.pbip`](../dashboard/README.md) no Power BI Desktop, atualizar os dados e conferir o modelo.
+2. Criar as medidas DAX e os gráficos seguindo [`dashboard_design.md`](dashboard_design.md).
+3. Adicionar as imagens do painel ao README e documentar os insights.

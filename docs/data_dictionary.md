@@ -1,6 +1,6 @@
 # Dicionário de Dados — Olist Brazilian E-Commerce Dataset
 
-Este documento descreve as principais tabelas do dataset público da Olist, utilizado como base para o pipeline de análise (ingestão → limpeza → Supabase → Power BI).
+Este documento descreve as principais tabelas do dataset público da Olist, utilizado como base para o pipeline de análise (ingestão → limpeza → Power BI).
 
 ---
 
