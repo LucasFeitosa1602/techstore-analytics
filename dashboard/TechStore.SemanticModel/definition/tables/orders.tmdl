@@ -1,57 +1,156 @@
 table orders
+	lineageTag: 5a12ccda-162d-4e6e-b908-b67853588127
 
 	column order_id
 		dataType: string
+		lineageTag: 0036ec81-ab2f-4851-acbd-3c1f7a493f3d
 		summarizeBy: none
 		sourceColumn: order_id
 
 	column customer_id
 		dataType: string
+		lineageTag: 73708a34-521d-434d-a0f9-748463ad3ef6
 		summarizeBy: none
 		sourceColumn: customer_id
 
 	column order_status
 		dataType: string
+		lineageTag: 0c23b426-eeba-43a3-941d-38abf85a8a88
 		summarizeBy: none
 		sourceColumn: order_status
 
 	column order_purchase_timestamp
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: 23752c62-1263-441c-a3c0-9662ecce8826
 		summarizeBy: none
 		sourceColumn: order_purchase_timestamp
+
+		variation Variation
+			isDefault
+			relationship: d2d5d34b-b7d8-407d-b8b6-0d37680e851c
+			defaultHierarchy: LocalDateTable_772b1bae-babb-4743-ba26-2a3d92144129.'Date Hierarchy'
 
 	column order_approved_at
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: beda7743-4c49-40cb-b0f0-3b86f620502c
 		summarizeBy: none
 		sourceColumn: order_approved_at
+
+		variation Variation
+			isDefault
+			relationship: 88aa6e0f-1fc6-4cbd-a8bb-9d455a34eede
+			defaultHierarchy: LocalDateTable_7775d227-1660-4ed9-92a5-75367ecebe37.'Date Hierarchy'
 
 	column order_delivered_carrier_date
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: 0cfc007d-602c-444d-9d9a-2c516e741afe
 		summarizeBy: none
 		sourceColumn: order_delivered_carrier_date
+
+		variation Variation
+			isDefault
+			relationship: e6ff12e2-405b-451a-b522-0d2cc577ff68
+			defaultHierarchy: LocalDateTable_bd5bc605-f4af-4259-af70-84b8cba4f0cd.'Date Hierarchy'
 
 	column order_delivered_customer_date
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: 0a218dc8-b9bf-44fe-8e64-e0446e04ea7a
 		summarizeBy: none
 		sourceColumn: order_delivered_customer_date
+
+		variation Variation
+			isDefault
+			relationship: 3b65e6be-3c3b-4b4a-868c-d419efdb184d
+			defaultHierarchy: LocalDateTable_f6d391c6-27a2-4c57-8445-8de5e442edff.'Date Hierarchy'
 
 	column order_estimated_delivery_date
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: 180616f9-7826-4c0c-973b-ff9d68d3bf61
 		summarizeBy: none
 		sourceColumn: order_estimated_delivery_date
+
+		variation Variation
+			isDefault
+			relationship: 4e35dd27-91a8-427d-9f6b-7dc5a9e739a5
+			defaultHierarchy: LocalDateTable_946b6ef1-feea-49ed-b131-fe76d9ecd36a.'Date Hierarchy'
 
 	column order_purchase_date
 		dataType: dateTime
 		formatString: Short Date
+		lineageTag: 5c02ee5d-1fa8-416b-b97c-0dd759853e88
 		summarizeBy: none
 		sourceColumn: order_purchase_date
 
 		annotation UnderlyingDateTimeDataType = Date
+
+	column pedido_valido = ```
+			// Regra central: status que vira venda + janela de analise + pelo menos 1 item
+			VAR _status_ok = NOT ( orders[order_status] IN { "canceled", "unavailable" } )
+			VAR _na_janela =
+			    orders[order_purchase_date] >= DATE ( 2017, 1, 1 )
+			        && orders[order_purchase_date] <= DATE ( 2018, 8, 31 )
+			VAR _tem_itens = COUNTROWS ( RELATEDTABLE ( order_items ) ) > 0
+			RETURN
+			    _status_ok && _na_janela && _tem_itens
+			```
+		dataType: boolean
+		summarizeBy: none
+
+	column cliente_pessoa = ```
+			// customer_id muda a cada pedido; customer_unique_id identifica a pessoa
+			RELATED ( customers[customer_unique_id] )
+			```
+		dataType: string
+		summarizeBy: none
+
+	column dias_entrega = ```
+			// So pedidos entregues e com data de entrega; os demais ficam em branco
+			IF (
+			    orders[order_status] = "delivered"
+			        && NOT ISBLANK ( orders[order_delivered_customer_date] ),
+			    CONVERT ( orders[order_delivered_customer_date] - orders[order_purchase_timestamp], DOUBLE )
+			)
+			```
+		dataType: double
+		formatString: 0.00
+		summarizeBy: none
+
+	column atrasado = ```
+			// Atraso por DIA: entregar no dia previsto nao e atraso
+			IF (
+			    NOT ISBLANK ( orders[dias_entrega] ),
+			    INT ( orders[order_delivered_customer_date] ) > INT ( orders[order_estimated_delivery_date] )
+			)
+			```
+		dataType: boolean
+		summarizeBy: none
+
+	column situacao_entrega = ```
+			IF (
+			    ISBLANK ( orders[atrasado] ),
+			    BLANK (),
+			    IF ( orders[atrasado], "Atrasado", "No prazo" )
+			)
+			```
+		dataType: string
+		summarizeBy: none
+
+	column pedidos_validos_do_cliente = ```
+			// Quantos pedidos validos a mesma pessoa tem (para achar os recorrentes)
+			CALCULATE (
+			    COUNTROWS ( orders ),
+			    ALLEXCEPT ( orders, orders[cliente_pessoa] ),
+			    orders[pedido_valido] = TRUE ()
+			)
+			```
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
 
 	partition orders = m
 		mode: import
@@ -66,3 +165,4 @@ table orders
 					PurchaseDate
 
 	annotation PBI_ResultType = Table
+

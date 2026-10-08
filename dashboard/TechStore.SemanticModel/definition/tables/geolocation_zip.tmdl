@@ -1,35 +1,42 @@
 table geolocation_zip
+	lineageTag: 3152fc42-60bf-4d7b-8a61-88bfad26c9c3
 
 	column geolocation_zip_code_prefix
 		dataType: string
+		lineageTag: 351dd5ca-75c8-4476-9377-e8b3883c9cf3
 		summarizeBy: none
 		sourceColumn: geolocation_zip_code_prefix
 
 	column geolocation_lat
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 42ce8f21-e14d-4bb5-b9c9-0d1eb64f0cd5
 		summarizeBy: sum
 		sourceColumn: geolocation_lat
 
 	column geolocation_lng
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 14cf8c0e-e42f-40d8-a80f-d96f7c053c6e
 		summarizeBy: sum
 		sourceColumn: geolocation_lng
 
 	column geolocation_city
 		dataType: string
+		lineageTag: 1672c3ef-12d4-40f9-9a5a-f550f888ac58
 		summarizeBy: none
 		sourceColumn: geolocation_city
 
 	column geolocation_state
 		dataType: string
+		lineageTag: 4aecdb13-c3d2-41db-95f4-9fe93034c5c5
 		summarizeBy: none
 		sourceColumn: geolocation_state
 
 	column n_points
 		dataType: int64
 		formatString: 0
+		lineageTag: 5b57b6b2-ea52-4c9b-bbf8-b8680ac00950
 		summarizeBy: sum
 		sourceColumn: n_points
 
@@ -39,8 +46,12 @@ table geolocation_zip
 				let
 					Source = Csv.Document(File.Contents(DataPath & "olist_geolocation_zip_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-					Typed = Table.TransformColumnTypes(Promoted, {{"geolocation_zip_code_prefix", type text}, {"geolocation_lat", type number}, {"geolocation_lng", type number}, {"geolocation_city", type text}, {"geolocation_state", type text}, {"n_points", Int64.Type}}, "en-US")
+					Typed = Table.TransformColumnTypes(Promoted, {{"geolocation_zip_code_prefix", type text}, {"geolocation_lat", type number}, {"geolocation_lng", type number}, {"geolocation_city", type text}, {"geolocation_state", type text}, {"n_points", Int64.Type}}, "en-US"),
+				    #"Colocar Cada Palavra Em Maiúscula" = Table.TransformColumns(Typed,{{"geolocation_city", Text.Proper, type text}})
 				in
-					Typed
+					#"Colocar Cada Palavra Em Maiúscula"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

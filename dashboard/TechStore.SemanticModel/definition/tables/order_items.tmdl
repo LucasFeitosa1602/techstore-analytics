@@ -1,41 +1,56 @@
 table order_items
+	lineageTag: dcdadee4-4d86-4be1-b16e-d53845eec276
 
 	column order_id
 		dataType: string
+		lineageTag: 5e1c018b-14c0-4325-a934-bc80e1e90908
 		summarizeBy: none
 		sourceColumn: order_id
 
 	column order_item_id
 		dataType: int64
 		formatString: 0
-		summarizeBy: none
+		lineageTag: f038eefe-2417-4106-bb50-0de16c2ed4dd
+		summarizeBy: sum
 		sourceColumn: order_item_id
+
+		annotation SummarizationSetBy = Automatic
 
 	column product_id
 		dataType: string
+		lineageTag: d151bcb8-7cc7-4201-a6b2-cb4fd4828992
 		summarizeBy: none
 		sourceColumn: product_id
 
 	column seller_id
 		dataType: string
+		lineageTag: 7d1eb961-a097-4bfe-ba55-bf09372ff8bd
 		summarizeBy: none
 		sourceColumn: seller_id
 
 	column shipping_limit_date
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: 748d3e8a-ac49-4149-95d0-fb64d811c390
 		summarizeBy: none
 		sourceColumn: shipping_limit_date
+
+		variation Variation
+			isDefault
+			relationship: 662e7afa-4717-4719-b6dd-9c6c4b72c131
+			defaultHierarchy: LocalDateTable_bf66db26-8ea1-4f2e-87a2-d2b0b6d9b019.'Date Hierarchy'
 
 	column price
 		dataType: double
 		formatString: #,0.00
+		lineageTag: e95916aa-b589-4ad6-b31e-5ef371193571
 		summarizeBy: sum
 		sourceColumn: price
 
 	column freight_value
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 00dfd67d-13ba-4a3b-b775-fe86e4d6b908
 		summarizeBy: sum
 		sourceColumn: freight_value
 
@@ -50,3 +65,4 @@ table order_items
 					Typed
 
 	annotation PBI_ResultType = Table
+

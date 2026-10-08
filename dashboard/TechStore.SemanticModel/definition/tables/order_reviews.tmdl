@@ -1,42 +1,60 @@
 table order_reviews
+	lineageTag: 6960310e-7c27-40bc-8764-9b141f88140a
 
 	column review_id
 		dataType: string
+		lineageTag: 35f96db9-b8a2-4bad-8fe7-3ad5b57106d7
 		summarizeBy: none
 		sourceColumn: review_id
 
 	column order_id
 		dataType: string
+		lineageTag: 161701d5-d949-4b44-82b3-8a9de4e7e945
 		summarizeBy: none
 		sourceColumn: order_id
 
 	column review_score
 		dataType: int64
 		formatString: 0
+		lineageTag: 8bda17e3-fbcb-4405-bbdd-a4dad3873950
 		summarizeBy: sum
 		sourceColumn: review_score
 
 	column review_comment_title
 		dataType: string
+		lineageTag: 12f2ec7a-3fd8-41b8-8168-5ebb39d28489
 		summarizeBy: none
 		sourceColumn: review_comment_title
 
 	column review_comment_message
 		dataType: string
+		lineageTag: 68553add-9f21-47df-82f0-932cbd11fd91
 		summarizeBy: none
 		sourceColumn: review_comment_message
 
 	column review_creation_date
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: 048e2f85-e305-4731-9989-cfafa4158ab0
 		summarizeBy: none
 		sourceColumn: review_creation_date
+
+		variation Variation
+			isDefault
+			relationship: de4153d2-b4eb-4765-b892-b22771a7344b
+			defaultHierarchy: LocalDateTable_797528ea-a4ff-4306-a02f-59f534b0bbe9.'Date Hierarchy'
 
 	column review_answer_timestamp
 		dataType: dateTime
 		formatString: General Date
+		lineageTag: 0d030852-907b-49f3-89ba-565636784ca3
 		summarizeBy: none
 		sourceColumn: review_answer_timestamp
+
+		variation Variation
+			isDefault
+			relationship: 2c84dc8c-a586-4794-821b-67c4977be9b0
+			defaultHierarchy: LocalDateTable_133532a2-9256-4dbf-a42f-b02b59e6e942.'Date Hierarchy'
 
 	partition order_reviews = m
 		mode: import
@@ -45,8 +63,13 @@ table order_reviews
 					Source = Csv.Document(File.Contents(DataPath & "olist_order_reviews_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
 					EmptyToNull = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, Table.ColumnNames(Promoted)),
-					Typed = Table.TransformColumnTypes(EmptyToNull, {{"review_id", type text}, {"order_id", type text}, {"review_score", Int64.Type}, {"review_comment_title", type text}, {"review_comment_message", type text}, {"review_creation_date", type datetime}, {"review_answer_timestamp", type datetime}}, "en-US")
+					Typed = Table.TransformColumnTypes(EmptyToNull, {{"review_id", type text}, {"order_id", type text}, {"review_score", Int64.Type}, {"review_comment_title", type text}, {"review_comment_message", type text}, {"review_creation_date", type datetime}, {"review_answer_timestamp", type datetime}}, "en-US"),
+				    #"Valor Substituído" = Table.ReplaceValue(Typed,null,"Sem Titulo",Replacer.ReplaceValue,{"review_comment_title"}),
+				    #"Valor Substituído1" = Table.ReplaceValue(#"Valor Substituído",null,"Sem Comentario",Replacer.ReplaceValue,{"review_comment_message"})
 				in
-					Typed
+				    #"Valor Substituído1"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

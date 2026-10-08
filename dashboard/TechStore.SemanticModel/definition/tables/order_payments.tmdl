@@ -1,30 +1,36 @@
 table order_payments
+	lineageTag: f4bc441e-4f94-495c-aeae-60a8a08fa609
 
 	column order_id
 		dataType: string
+		lineageTag: 5907c569-0fb8-46b2-b48b-a893f94f0f28
 		summarizeBy: none
 		sourceColumn: order_id
 
 	column payment_sequential
 		dataType: int64
 		formatString: 0
+		lineageTag: 231b46e0-6940-48a1-b3e8-3d03f9a0f1fd
 		summarizeBy: none
 		sourceColumn: payment_sequential
 
 	column payment_type
 		dataType: string
+		lineageTag: f6898060-bf66-48cf-9e9e-9a9efe9e8054
 		summarizeBy: none
 		sourceColumn: payment_type
 
 	column payment_installments
 		dataType: int64
 		formatString: 0
+		lineageTag: e69849a9-69a6-4049-91b0-ad06138bb4cc
 		summarizeBy: sum
 		sourceColumn: payment_installments
 
 	column payment_value
 		dataType: double
 		formatString: #,0.00
+		lineageTag: e27727ba-5166-45d3-9a66-d0b7c4f32d2e
 		summarizeBy: sum
 		sourceColumn: payment_value
 
@@ -34,8 +40,12 @@ table order_payments
 				let
 					Source = Csv.Document(File.Contents(DataPath & "olist_order_payments_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-					Typed = Table.TransformColumnTypes(Promoted, {{"order_id", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", type number}}, "en-US")
+					Typed = Table.TransformColumnTypes(Promoted, {{"order_id", type text}, {"payment_sequential", Int64.Type}, {"payment_type", type text}, {"payment_installments", Int64.Type}, {"payment_value", type number}}, "en-US"),
+				    #"Colocar Cada Palavra Em Maiúscula" = Table.TransformColumns(Typed,{{"payment_type", Text.Proper, type text}})
 				in
-					Typed
+					#"Colocar Cada Palavra Em Maiúscula"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

@@ -1,27 +1,33 @@
 table customers
+	lineageTag: b15d81ae-f8f5-4d3f-b01b-0d3d891fa706
 
 	column customer_id
 		dataType: string
+		lineageTag: 523992bc-c978-4c48-b4af-d2ce1c1e8a8a
 		summarizeBy: none
 		sourceColumn: customer_id
 
 	column customer_unique_id
 		dataType: string
+		lineageTag: 274f335a-6978-46c5-b6f0-3d533eeebbc8
 		summarizeBy: none
 		sourceColumn: customer_unique_id
 
 	column customer_zip_code_prefix
 		dataType: string
+		lineageTag: 5124f239-df33-4714-9af7-499eeefd1e20
 		summarizeBy: none
 		sourceColumn: customer_zip_code_prefix
 
 	column customer_city
 		dataType: string
+		lineageTag: 84e90cb5-3bb9-46bf-b894-731b251ddb02
 		summarizeBy: none
 		sourceColumn: customer_city
 
 	column customer_state
 		dataType: string
+		lineageTag: 3285a7b3-29e6-4e93-b573-a96fa4b18a33
 		summarizeBy: none
 		sourceColumn: customer_state
 
@@ -31,8 +37,12 @@ table customers
 				let
 					Source = Csv.Document(File.Contents(DataPath & "olist_customers_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-					Typed = Table.TransformColumnTypes(Promoted, {{"customer_id", type text}, {"customer_unique_id", type text}, {"customer_zip_code_prefix", type text}, {"customer_city", type text}, {"customer_state", type text}}, "en-US")
+					Typed = Table.TransformColumnTypes(Promoted, {{"customer_id", type text}, {"customer_unique_id", type text}, {"customer_zip_code_prefix", type text}, {"customer_city", type text}, {"customer_state", type text}}, "en-US"),
+				    #"Colocar Cada Palavra Em Maiúscula" = Table.TransformColumns(Typed,{{"customer_city", Text.Proper, type text}})
 				in
-					Typed
+				    #"Colocar Cada Palavra Em Maiúscula"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

@@ -1,6 +1,16 @@
 model Model
 	culture: en-US
 	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["customers","sellers","products","product_category_translation","orders","order_items","order_payments","order_reviews","geolocation_zip","calendario","DataPath"]
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_ProTooling = ["DevMode"]
 
 ref table customers
 ref table sellers
@@ -12,4 +22,14 @@ ref table order_payments
 ref table order_reviews
 ref table geolocation_zip
 ref table calendario
-ref expression DataPath
+ref table _Medidas
+ref table DateTableTemplate_61bc89ee-0e36-4d2e-8307-d6b3db3a6a4b
+ref table LocalDateTable_772b1bae-babb-4743-ba26-2a3d92144129
+ref table LocalDateTable_7775d227-1660-4ed9-92a5-75367ecebe37
+ref table LocalDateTable_bd5bc605-f4af-4259-af70-84b8cba4f0cd
+ref table LocalDateTable_f6d391c6-27a2-4c57-8445-8de5e442edff
+ref table LocalDateTable_946b6ef1-feea-49ed-b131-fe76d9ecd36a
+ref table LocalDateTable_bf66db26-8ea1-4f2e-87a2-d2b0b6d9b019
+ref table LocalDateTable_797528ea-a4ff-4306-a02f-59f534b0bbe9
+ref table LocalDateTable_133532a2-9256-4dbf-a42f-b02b59e6e942
+

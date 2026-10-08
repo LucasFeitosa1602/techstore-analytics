@@ -1,0 +1,160 @@
+table _Medidas
+
+	measure 'Receita de Produtos' = CALCULATE ( SUM ( order_items[price] ), orders[pedido_valido] = TRUE () )
+		formatString: "R$" #,0.00
+		displayFolder: Vendas
+
+	measure 'Frete Total' = CALCULATE ( SUM ( order_items[freight_value] ), orders[pedido_valido] = TRUE () )
+		formatString: "R$" #,0.00
+		displayFolder: Vendas
+
+	measure 'Receita Total' = [Receita de Produtos] + [Frete Total]
+		formatString: "R$" #,0.00
+		displayFolder: Vendas
+
+	measure 'Número de Pedidos' = CALCULATE ( DISTINCTCOUNT ( order_items[order_id] ), orders[pedido_valido] = TRUE () )
+		formatString: #,0
+		displayFolder: Vendas
+
+	measure 'Ticket Médio' = DIVIDE ( [Receita Total], [Número de Pedidos] )
+		formatString: "R$" #,0.00
+		displayFolder: Vendas
+
+	measure 'Frete Médio por Pedido' = DIVIDE ( [Frete Total], [Número de Pedidos] )
+		formatString: "R$" #,0.00
+		displayFolder: Vendas
+
+	measure 'Produtos Vendidos' = CALCULATE ( COUNTROWS ( order_items ), orders[pedido_valido] = TRUE () )
+		formatString: #,0
+		displayFolder: Vendas
+
+	measure 'Categoria com Maior Receita' = ```
+			VAR _categorias =
+			    ADDCOLUMNS (
+			        VALUES ( product_category_translation[product_category_name_english] ),
+			        "@receita", [Receita Total]
+			    )
+			VAR _topo = TOPN ( 1, _categorias, [@receita], DESC )
+			RETURN
+			    MAXX ( _topo, product_category_translation[product_category_name_english] )
+			```
+		displayFolder: Vendas
+
+	measure 'Pedidos por Forma de Pagamento' = ```
+			// KEEPFILTERS mantem o filtro do eixo do grafico e ainda exclui not_defined
+			CALCULATE (
+			    DISTINCTCOUNT ( order_payments[order_id] ),
+			    orders[pedido_valido] = TRUE (),
+			    KEEPFILTERS ( order_payments[payment_type] <> "not_defined" )
+			)
+			```
+		formatString: #,0
+		displayFolder: Vendas
+
+	measure '% Pedidos por Forma de Pagamento' = DIVIDE ( [Pedidos por Forma de Pagamento], [Número de Pedidos] )
+		formatString: 0.00%
+		displayFolder: Vendas
+
+	measure 'Forma de Pagamento Mais Usada' = ```
+			VAR _formas =
+			    ADDCOLUMNS (
+			        VALUES ( order_payments[payment_type] ),
+			        "@pedidos", [Pedidos por Forma de Pagamento]
+			    )
+			VAR _topo = TOPN ( 1, _formas, [@pedidos], DESC )
+			RETURN
+			    MAXX ( _topo, order_payments[payment_type] )
+			```
+		displayFolder: Vendas
+
+	measure 'Receita Mês Anterior' = CALCULATE ( [Receita Total], DATEADD ( calendario[Date], -1, MONTH ) )
+		formatString: "R$" #,0.00
+		displayFolder: Vendas
+
+	measure 'Variação Receita vs Mês Anterior' = DIVIDE ( [Receita Total] - [Receita Mês Anterior], [Receita Mês Anterior] )
+		formatString: 0.0%
+		displayFolder: Vendas
+
+	measure 'Pedidos Entregues' = ```
+			CALCULATE (
+			    COUNTROWS ( orders ),
+			    orders[pedido_valido] = TRUE (),
+			    orders[situacao_entrega] IN { "No prazo", "Atrasado" }
+			)
+			```
+		formatString: #,0
+		displayFolder: Entrega e Clientes
+
+	measure 'Pedidos Atrasados' = ```
+			CALCULATE (
+			    COUNTROWS ( orders ),
+			    orders[pedido_valido] = TRUE (),
+			    orders[situacao_entrega] = "Atrasado"
+			)
+			```
+		formatString: #,0
+		displayFolder: Entrega e Clientes
+
+	measure '% Pedidos Atrasados' = DIVIDE ( [Pedidos Atrasados], [Pedidos Entregues] )
+		formatString: 0.00%
+		displayFolder: Entrega e Clientes
+
+	measure 'Tempo Médio de Entrega' = CALCULATE ( AVERAGE ( orders[dias_entrega] ), orders[pedido_valido] = TRUE () )
+		formatString: 0.00
+		displayFolder: Entrega e Clientes
+
+	measure 'Tempo Mediano de Entrega' = CALCULATE ( MEDIAN ( orders[dias_entrega] ), orders[pedido_valido] = TRUE () )
+		formatString: 0.00
+		displayFolder: Entrega e Clientes
+
+	measure 'Avaliações' = CALCULATE ( COUNTROWS ( order_reviews ), orders[pedido_valido] = TRUE () )
+		formatString: #,0
+		displayFolder: Entrega e Clientes
+
+	measure 'Avaliação Média' = CALCULATE ( AVERAGE ( order_reviews[review_score] ), orders[pedido_valido] = TRUE () )
+		formatString: 0.00
+		displayFolder: Entrega e Clientes
+
+	measure '% das Avaliações' = ```
+			// Percentual de cada nota; ALLSELECTED mantem os filtros de pagina e remove so o da nota
+			DIVIDE (
+			    [Avaliações],
+			    CALCULATE ( [Avaliações], ALLSELECTED ( order_reviews[review_score] ) )
+			)
+			```
+		formatString: 0.0%
+		displayFolder: Entrega e Clientes
+
+	measure 'Clientes Únicos' = CALCULATE ( DISTINCTCOUNT ( orders[cliente_pessoa] ), orders[pedido_valido] = TRUE () )
+		formatString: #,0
+		displayFolder: Entrega e Clientes
+
+	measure 'Clientes Recorrentes' = ```
+			CALCULATE (
+			    DISTINCTCOUNT ( orders[cliente_pessoa] ),
+			    orders[pedido_valido] = TRUE (),
+			    orders[pedidos_validos_do_cliente] >= 2
+			)
+			```
+		formatString: #,0
+		displayFolder: Entrega e Clientes
+
+	measure 'Clientes Recorrentes %' = DIVIDE ( [Clientes Recorrentes], [Clientes Únicos] )
+		formatString: 0.00%
+		displayFolder: Entrega e Clientes
+
+	column Coluna
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: Coluna
+
+	partition _Medidas = m
+		mode: import
+		source =
+				let
+					Source = #table ( type table [Coluna = text], {} )
+				in
+					Source
+
+	annotation PBI_ResultType = Table

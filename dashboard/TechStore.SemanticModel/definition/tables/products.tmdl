@@ -1,54 +1,64 @@
 table products
+	lineageTag: 3ec287ae-1ed2-4b6e-9a76-bc6e518428d2
 
 	column product_id
 		dataType: string
+		lineageTag: 2b8f239a-6e84-42ea-b341-35fb289579d0
 		summarizeBy: none
 		sourceColumn: product_id
 
 	column product_category_name
 		dataType: string
+		lineageTag: 82ccb3c5-2397-41bf-a146-df0aa2ca32ad
 		summarizeBy: none
 		sourceColumn: product_category_name
 
 	column product_name_lenght
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 45cfc74f-e2ef-4303-9862-9272930665a1
 		summarizeBy: sum
 		sourceColumn: product_name_lenght
 
 	column product_description_lenght
 		dataType: double
 		formatString: #,0.00
+		lineageTag: be75c87f-1e10-45db-ab6a-57fa47db96da
 		summarizeBy: sum
 		sourceColumn: product_description_lenght
 
 	column product_photos_qty
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 990bb532-bec7-4981-aa74-a305a8b46b32
 		summarizeBy: sum
 		sourceColumn: product_photos_qty
 
 	column product_weight_g
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 966583d3-0436-471c-850a-09130e422fc8
 		summarizeBy: sum
 		sourceColumn: product_weight_g
 
 	column product_length_cm
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 96c28d24-d640-406c-bbad-431e6a29d854
 		summarizeBy: sum
 		sourceColumn: product_length_cm
 
 	column product_height_cm
 		dataType: double
 		formatString: #,0.00
+		lineageTag: c9f909c2-7247-463d-8252-e736a20bd006
 		summarizeBy: sum
 		sourceColumn: product_height_cm
 
 	column product_width_cm
 		dataType: double
 		formatString: #,0.00
+		lineageTag: 731bfc32-bfa3-4d90-95c9-c2680094ed0e
 		summarizeBy: sum
 		sourceColumn: product_width_cm
 
@@ -58,8 +68,12 @@ table products
 				let
 					Source = Csv.Document(File.Contents(DataPath & "olist_products_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-					Typed = Table.TransformColumnTypes(Promoted, {{"product_id", type text}, {"product_category_name", type text}, {"product_name_lenght", type number}, {"product_description_lenght", type number}, {"product_photos_qty", type number}, {"product_weight_g", type number}, {"product_length_cm", type number}, {"product_height_cm", type number}, {"product_width_cm", type number}}, "en-US")
+					Typed = Table.TransformColumnTypes(Promoted, {{"product_id", type text}, {"product_category_name", type text}, {"product_name_lenght", type number}, {"product_description_lenght", type number}, {"product_photos_qty", type number}, {"product_weight_g", type number}, {"product_length_cm", type number}, {"product_height_cm", type number}, {"product_width_cm", type number}}, "en-US"),
+				    #"Colocar Cada Palavra Em Maiúscula" = Table.TransformColumns(Typed,{{"product_category_name", Text.Proper, type text}})
 				in
-					Typed
+				    #"Colocar Cada Palavra Em Maiúscula"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

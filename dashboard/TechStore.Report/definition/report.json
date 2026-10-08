@@ -1,9 +1,13 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/1.0.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
   "themeCollection": {
     "customTheme": {
       "name": "TechStore.json",
-      "reportVersionAtImport": "5.60",
+      "reportVersionAtImport": {
+        "visual": "1.8.96",
+        "report": "2.0.96",
+        "page": "1.3.96"
+      },
       "type": "RegisteredResources"
     }
   },
@@ -21,9 +25,9 @@
     }
   ],
   "settings": {
-    "useNewFilterPaneExperience": true,
-    "allowChangeFilterTypes": true,
     "useStylableVisualContainerHeader": true,
-    "defaultDrillFilterOtherVisuals": true
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": false
   }
 }

@@ -1,22 +1,27 @@
 table sellers
+	lineageTag: d0509ba3-d2ee-4013-9750-9512bca82b4f
 
 	column seller_id
 		dataType: string
+		lineageTag: 717830bd-2ecc-4ea5-bf3f-61591d3c313e
 		summarizeBy: none
 		sourceColumn: seller_id
 
 	column seller_zip_code_prefix
 		dataType: string
+		lineageTag: dee6f812-7374-4741-94ba-dca5b60eddd6
 		summarizeBy: none
 		sourceColumn: seller_zip_code_prefix
 
 	column seller_city
 		dataType: string
+		lineageTag: 9f368126-355c-4ab3-a5bf-73fa451a9c56
 		summarizeBy: none
 		sourceColumn: seller_city
 
 	column seller_state
 		dataType: string
+		lineageTag: 0803b04a-a973-4388-833e-4b08e3ae6ccc
 		summarizeBy: none
 		sourceColumn: seller_state
 
@@ -26,8 +31,12 @@ table sellers
 				let
 					Source = Csv.Document(File.Contents(DataPath & "olist_sellers_dataset_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-					Typed = Table.TransformColumnTypes(Promoted, {{"seller_id", type text}, {"seller_zip_code_prefix", type text}, {"seller_city", type text}, {"seller_state", type text}}, "en-US")
+					Typed = Table.TransformColumnTypes(Promoted, {{"seller_id", type text}, {"seller_zip_code_prefix", type text}, {"seller_city", type text}, {"seller_state", type text}}, "en-US"),
+				    #"Colocar Cada Palavra Em Maiúscula" = Table.TransformColumns(Typed,{{"seller_city", Text.Proper, type text}})
 				in
-					Typed
+					#"Colocar Cada Palavra Em Maiúscula"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

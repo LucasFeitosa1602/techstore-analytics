@@ -1,12 +1,15 @@
 table product_category_translation
+	lineageTag: 0a257189-5892-485f-92cc-344554d526d8
 
 	column product_category_name
 		dataType: string
+		lineageTag: 079da8bb-1373-4857-967d-8251012c0ecd
 		summarizeBy: none
 		sourceColumn: product_category_name
 
 	column product_category_name_english
 		dataType: string
+		lineageTag: 6f3d2557-a096-4d47-a8c9-6570ff6bb29d
 		summarizeBy: none
 		sourceColumn: product_category_name_english
 
@@ -16,8 +19,12 @@ table product_category_translation
 				let
 					Source = Csv.Document(File.Contents(DataPath & "product_category_name_translation_clean.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 					Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-					Typed = Table.TransformColumnTypes(Promoted, {{"product_category_name", type text}, {"product_category_name_english", type text}}, "en-US")
+					Typed = Table.TransformColumnTypes(Promoted, {{"product_category_name", type text}, {"product_category_name_english", type text}}, "en-US"),
+				    #"Colocar Cada Palavra Em Maiúscula" = Table.TransformColumns(Typed,{{"product_category_name", Text.Proper, type text}, {"product_category_name_english", Text.Proper, type text}})
 				in
-					Typed
+					#"Colocar Cada Palavra Em Maiúscula"
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
+

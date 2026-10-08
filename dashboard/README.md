@@ -1,8 +1,10 @@
 # 📊 Projeto Power BI — TechStore Analytics
 
-Projeto do Power BI (formato `.pbip`) com o modelo de dados, os relacionamentos, o tema e as 2 páginas em branco. Falta só criar os gráficos e as medidas DAX.
+Projeto do Power BI (formato `.pbip`) com o modelo de dados, os relacionamentos, o tema, as medidas DAX e as 2 páginas em branco. Falta só criar os gráficos.
 
 O design das páginas está em [`../docs/dashboard_design.md`](../docs/dashboard_design.md).
+
+> Se você editar os arquivos do projeto fora do Power BI Desktop, **feche o Desktop sem salvar antes** e reabra o `.pbip`: o Desktop não recarrega mudanças feitas por fora e, ao salvar, sobrescreve elas.
 
 > ⚠️ **Este projeto foi gerado por script e não foi aberto no Power BI Desktop** (ele não estava disponível no ambiente de geração). Os arquivos foram conferidos contra os CSVs (colunas, tipos e chaves), mas se o Desktop reclamar de algo na primeira abertura, anote a mensagem de erro para corrigir.
 
@@ -12,11 +14,12 @@ O design das páginas está em [`../docs/dashboard_design.md`](../docs/dashboard
 |---|---|
 | **Fonte de dados** | CSVs de `data/processed/`, lidos pelo Power Query |
 | **Parâmetro** | `DataPath`: pasta dos CSVs (já aponta para `D:\Projetos DEV\TechStore Analytics\data\processed\`) |
-| **Tabelas (10)** | `orders`, `order_items`, `order_payments`, `order_reviews`, `customers`, `sellers`, `products`, `product_category_translation`, `geolocation_zip` e `calendario` |
+| **Tabelas (11)** | `orders`, `order_items`, `order_payments`, `order_reviews`, `customers`, `sellers`, `products`, `product_category_translation`, `geolocation_zip`, `calendario` e `_Medidas` (só medidas) |
 | **Relacionamentos (10)** | Todos de muitos para um, com filtro em uma direção (veja abaixo) |
 | **Tema** | `TechStore`: paleta, fonte Segoe UI, fundo da página cinza claro e visuais brancos com cantos arredondados |
 | **Páginas** | `Vendas` e `Entrega e Clientes`, em 16:9 (1280 × 720) |
-| **Não vem** | Medidas DAX e visuais (você cria) |
+| **Medidas DAX** | 6 colunas calculadas na `orders` e 24 medidas na `_Medidas`, em duas pastas: `Vendas` e `Entrega e Clientes` |
+| **Não vem** | Os visuais (você cria) |
 
 ### Relacionamentos
 
@@ -57,6 +60,31 @@ O último está inativo de propósito: `geolocation_zip` chegaria em `order_item
 | `geolocation_zip` | 19.010 |
 | `product_category_translation` | 74 |
 | `calendario` | 791 (2016-09-01 a 2018-10-31) |
+
+## Medidas DAX
+
+As colunas calculadas ficam na tabela `orders` (`pedido_valido`, `cliente_pessoa`, `dias_entrega`, `atrasado`, `situacao_entrega` e `pedidos_validos_do_cliente`) e as medidas na tabela `_Medidas`.
+
+Toda medida usa `pedido_valido`: status diferente de `canceled`/`unavailable`, compra entre 2017-01-01 e 2018-08-31 e pelo menos 1 item. Para mudar a janela ou os status, edite só essa coluna.
+
+Valores esperados, sem nenhum filtro aplicado:
+
+| Medida | Esperado |
+|---|---|
+| Receita Total | R$ 15.683.706,74 |
+| Número de Pedidos | 97.905 |
+| Ticket Médio | R$ 160,19 |
+| Frete Médio por Pedido | R$ 22,82 |
+| Produtos Vendidos | 111.752 |
+| Categoria com Maior Receita | health_beauty |
+| Forma de Pagamento Mais Usada | credit_card |
+| % Pedidos Atrasados | 6,79% |
+| Tempo Médio de Entrega | 12,54 dias |
+| Avaliação Média | 4,12 |
+| Clientes Únicos | 94.703 |
+| Clientes Recorrentes % | 3,03% |
+
+As medidas de pedidos, entrega e clientes reagem aos filtros de Estado e Período, mas não ao de Categoria (que filtra os itens, não os pedidos).
 
 ## Tema
 

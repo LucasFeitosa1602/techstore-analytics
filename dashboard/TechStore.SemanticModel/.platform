@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "TechStore"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "ecfeb416-52c3-49f7-8641-49c0dbb13399"
+  }
+}

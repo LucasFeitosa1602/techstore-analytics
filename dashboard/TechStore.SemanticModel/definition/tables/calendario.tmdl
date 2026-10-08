@@ -1,10 +1,12 @@
 table calendario
+	lineageTag: 3b7f8e08-ef79-4625-b5f7-d0ced564775a
 	dataCategory: Time
 
 	column Date
 		dataType: dateTime
 		isKey
 		formatString: Short Date
+		lineageTag: 1596d554-8b4e-467f-b9fe-2d4263241e3f
 		summarizeBy: none
 		sourceColumn: Date
 
@@ -13,23 +15,27 @@ table calendario
 	column Ano
 		dataType: int64
 		formatString: 0
+		lineageTag: 52035ddb-2ea7-4aa5-b84e-e82e7a3be609
 		summarizeBy: none
 		sourceColumn: Ano
 
 	column 'Mês Nº'
 		dataType: int64
 		formatString: 0
+		lineageTag: 1fd1cce4-c2c4-49f5-8d0a-7cdc0d0ff203
 		summarizeBy: none
 		sourceColumn: Mês Nº
 
 	column Mês
 		dataType: string
+		lineageTag: 73216fc3-23fc-4d8f-bac8-0afe416ac5aa
 		summarizeBy: none
 		sourceColumn: Mês
 		sortByColumn: 'Mês Nº'
 
-	column 'Ano-Mês'
+	column Ano-Mês
 		dataType: string
+		lineageTag: b61bb9aa-4b3a-4ad9-ae36-ed8bf414db51
 		summarizeBy: none
 		sourceColumn: Ano-Mês
 
@@ -50,3 +56,4 @@ table calendario
 					YearMonth
 
 	annotation PBI_ResultType = Table
+
