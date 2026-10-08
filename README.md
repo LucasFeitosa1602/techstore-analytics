@@ -3,8 +3,8 @@
 Projeto de análise de dados de ponta a ponta sobre o e-commerce brasileiro **Olist**: do dado bruto até um dashboard de KPIs de vendas, logística, clientes e produtos.
 
 ```
-CSVs brutos ──► Limpeza (Python/pandas) ──► Banco (Supabase/PostgreSQL) ──► Dashboard (Power BI)
-     ✅                  ✅                           🔜                           🔜
+CSVs brutos ──► Limpeza (Python/pandas) ──► CSVs tratados ──► Dashboard (Power BI)
+     ✅                  ✅                       ✅                  🔜
 ```
 
 ## 🎯 Objetivo
@@ -45,11 +45,11 @@ Dicionário completo e relacionamentos em [`docs/data_dictionary.md`](docs/data_
 |---|---|
 | Documentação de negócio (dicionário, KPIs, perguntas) | ✅ Concluído |
 | Profiling e limpeza dos 9 datasets | ✅ Concluído |
-| Schema e chaves estrangeiras do banco | 🟡 Criados, com ajustes pendentes |
-| Carga no Supabase | 🔜 Próxima etapa |
-| Índices e views dos KPIs | 🔜 Pendente |
-| Análises das perguntas de negócio | 🔜 Pendente |
-| Dashboard no Power BI | 🔜 Pendente |
+| Design do dashboard (estilo e modelo das 2 páginas) | ✅ Concluído |
+| Projeto Power BI com modelo de dados, relacionamentos e tema | ✅ Criado (ainda não aberto no Power BI Desktop) |
+| Medidas DAX e gráficos do dashboard | 🔜 Em construção |
+
+> O Power BI lê os CSVs de `data/processed/` diretamente: não há banco de dados.
 
 ## 🧹 Limpeza de dados
 
@@ -69,6 +69,17 @@ Cada dataset tem um notebook que faz o profiling, trata os problemas, valida o r
 
 Decisões, validações e pontos de atenção em [`docs/data_cleaning.md`](docs/data_cleaning.md).
 
+## 📊 Dashboard
+
+Dashboard de 2 páginas no Power BI: **Vendas** e **Entrega e Clientes**. O estilo, o modelo de cada página e o motivo de cada gráfico estão em [`docs/dashboard_design.md`](docs/dashboard_design.md).
+
+O projeto do Power BI está em [`dashboard/`](dashboard/README.md): abra `dashboard/TechStore.pbip` no Power BI Desktop. Ele já traz as tabelas lidas de `data/processed/`, os relacionamentos, o tema e as 2 páginas em branco.
+
+<!-- Imagens do painel: salvar em docs/images/ e adicionar aqui, por exemplo:
+![Página 1 — Vendas](docs/images/pagina1_vendas.png)
+![Página 2 — Entrega e Clientes](docs/images/pagina2_entrega_clientes.png)
+-->
+
 ## 🗂️ Estrutura do projeto
 
 ```
@@ -77,12 +88,13 @@ TechStore Analytics/
 │   ├── raw/            # 9 CSVs originais (não alterados)
 │   └── processed/      # CSVs tratados (*_clean.csv)
 ├── notebooks/          # 01 a 09: profiling e limpeza, um por dataset
-├── database/           # schema.sql, constraints.sql, indexes.sql, views.sql
+├── dashboard/          # projeto do Power BI (TechStore.pbip): modelo, tema e páginas
 ├── docs/
 │   ├── data_dictionary.md    # tabelas, colunas e relacionamentos
 │   ├── data_cleaning.md      # o que foi feito na limpeza e por quê
 │   ├── business_questions.md # perguntas de negócio
-│   └── kpis.md               # KPIs do dashboard
+│   ├── kpis.md               # KPIs do dashboard
+│   └── dashboard_design.md   # estilo e modelo das páginas do dashboard
 ├── requirements.txt
 └── README.md
 ```
@@ -111,16 +123,14 @@ Execute os notebooks da pasta `notebooks/` na ordem numérica. O `01` precisa ro
 ## 🛠️ Tecnologias
 
 - **Python** (pandas) e **Jupyter** para profiling e limpeza
-- **PostgreSQL / Supabase** para o banco de dados
-- **Power BI** para o dashboard
+- **Power BI** (Power Query e DAX) para o modelo e o dashboard
 
 ## 🔜 Próximos passos
 
-1. Definir as regras dos KPIs: filtro de status dos pedidos e janela de tempo (sugestão: 2017-01 a 2018-08).
-2. Ajustar o schema do banco (chave de `order_reviews`, tipos inteiros de `products` e tabela de geolocalização por CEP).
-3. Carregar os dados tratados no Supabase.
-4. Criar índices e views com os KPIs.
-5. Construir o dashboard no Power BI e documentar os insights.
+1. Abrir o projeto no Power BI Desktop, atualizar os dados e conferir o modelo.
+2. Definir as regras dos KPIs: filtro de status dos pedidos e janela de tempo (sugestão: 2017-01 a 2018-08).
+3. Criar as medidas DAX e os gráficos das 2 páginas.
+4. Adicionar as imagens do painel ao README e documentar os insights.
 
 ## 📄 Fonte dos dados
 
