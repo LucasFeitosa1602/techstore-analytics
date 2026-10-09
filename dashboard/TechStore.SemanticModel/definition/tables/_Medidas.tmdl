@@ -1,34 +1,42 @@
 table _Medidas
+	lineageTag: 02aef389-10f0-41e0-a953-63fb713fcd4b
 
 	measure 'Receita de Produtos' = CALCULATE ( SUM ( order_items[price] ), orders[pedido_valido] = TRUE () )
 		formatString: "R$" #,0.00
 		displayFolder: Vendas
+		lineageTag: d760c559-86ac-4e01-a681-cdc158ab41d3
 
 	measure 'Frete Total' = CALCULATE ( SUM ( order_items[freight_value] ), orders[pedido_valido] = TRUE () )
 		formatString: "R$" #,0.00
 		displayFolder: Vendas
+		lineageTag: 91401c8f-f2c0-4f96-8c83-4050ead94af8
 
 	measure 'Receita Total' = [Receita de Produtos] + [Frete Total]
 		formatString: "R$" #,0.00
 		displayFolder: Vendas
+		lineageTag: d4c83634-9e62-4664-b285-ede1d5653789
 
 	measure 'Número de Pedidos' = CALCULATE ( DISTINCTCOUNT ( order_items[order_id] ), orders[pedido_valido] = TRUE () )
 		formatString: #,0
 		displayFolder: Vendas
+		lineageTag: 773cbb64-73b7-4b87-9bce-9ecdc2870a31
 
 	measure 'Ticket Médio' = DIVIDE ( [Receita Total], [Número de Pedidos] )
 		formatString: "R$" #,0.00
 		displayFolder: Vendas
+		lineageTag: cbaf03f5-3eb6-4efb-806c-9bd4dc137067
 
 	measure 'Frete Médio por Pedido' = DIVIDE ( [Frete Total], [Número de Pedidos] )
 		formatString: "R$" #,0.00
 		displayFolder: Vendas
+		lineageTag: 2193f5df-9209-4560-8769-665780e1f2f3
 
 	measure 'Produtos Vendidos' = CALCULATE ( COUNTROWS ( order_items ), orders[pedido_valido] = TRUE () )
 		formatString: #,0
 		displayFolder: Vendas
+		lineageTag: 82fd6742-ebba-41e6-9285-396eaffcd5b8
 
-	measure 'Categoria com Maior Receita' = ```
+	measure 'Categoria com Maior Receita' =
 			VAR _categorias =
 			    ADDCOLUMNS (
 			        VALUES ( product_category_translation[product_category_name_english] ),
@@ -37,25 +45,26 @@ table _Medidas
 			VAR _topo = TOPN ( 1, _categorias, [@receita], DESC )
 			RETURN
 			    MAXX ( _topo, product_category_translation[product_category_name_english] )
-			```
 		displayFolder: Vendas
+		lineageTag: 6965ef9f-1223-47e0-ad45-f45aebd21d18
 
-	measure 'Pedidos por Forma de Pagamento' = ```
+	measure 'Pedidos por Forma de Pagamento' =
 			// KEEPFILTERS mantem o filtro do eixo do grafico e ainda exclui not_defined
 			CALCULATE (
 			    DISTINCTCOUNT ( order_payments[order_id] ),
 			    orders[pedido_valido] = TRUE (),
 			    KEEPFILTERS ( order_payments[payment_type] <> "not_defined" )
 			)
-			```
 		formatString: #,0
 		displayFolder: Vendas
+		lineageTag: ab59698b-c1be-4e96-bac7-0cb205b7aab9
 
 	measure '% Pedidos por Forma de Pagamento' = DIVIDE ( [Pedidos por Forma de Pagamento], [Número de Pedidos] )
 		formatString: 0.00%
 		displayFolder: Vendas
+		lineageTag: e4191d51-f20d-44ed-bec3-f910eed3b09f
 
-	measure 'Forma de Pagamento Mais Usada' = ```
+	measure 'Forma de Pagamento Mais Usada' =
 			VAR _formas =
 			    ADDCOLUMNS (
 			        VALUES ( order_payments[payment_type] ),
@@ -64,88 +73,126 @@ table _Medidas
 			VAR _topo = TOPN ( 1, _formas, [@pedidos], DESC )
 			RETURN
 			    MAXX ( _topo, order_payments[payment_type] )
-			```
 		displayFolder: Vendas
+		lineageTag: b615ac58-cc06-4d67-ab9a-9d5c24514be7
 
 	measure 'Receita Mês Anterior' = CALCULATE ( [Receita Total], DATEADD ( calendario[Date], -1, MONTH ) )
 		formatString: "R$" #,0.00
 		displayFolder: Vendas
+		lineageTag: 80f172f8-9d92-44af-8249-93e59afdec37
 
 	measure 'Variação Receita vs Mês Anterior' = DIVIDE ( [Receita Total] - [Receita Mês Anterior], [Receita Mês Anterior] )
 		formatString: 0.0%
 		displayFolder: Vendas
+		lineageTag: 65c920d7-fe10-458d-89ea-cfbd4fb4da94
 
-	measure 'Pedidos Entregues' = ```
+	measure 'Pedidos Entregues' =
 			CALCULATE (
 			    COUNTROWS ( orders ),
 			    orders[pedido_valido] = TRUE (),
 			    orders[situacao_entrega] IN { "No prazo", "Atrasado" }
 			)
-			```
 		formatString: #,0
 		displayFolder: Entrega e Clientes
+		lineageTag: 9bca638a-2efd-430e-86ee-bb1f804da982
 
-	measure 'Pedidos Atrasados' = ```
+	measure 'Pedidos Atrasados' =
 			CALCULATE (
 			    COUNTROWS ( orders ),
 			    orders[pedido_valido] = TRUE (),
 			    orders[situacao_entrega] = "Atrasado"
 			)
-			```
 		formatString: #,0
 		displayFolder: Entrega e Clientes
+		lineageTag: 8b4fcade-a03b-4887-8275-51cf4c1466c0
 
 	measure '% Pedidos Atrasados' = DIVIDE ( [Pedidos Atrasados], [Pedidos Entregues] )
 		formatString: 0.00%
 		displayFolder: Entrega e Clientes
+		lineageTag: f1965547-b540-4128-a1f7-993ba53c53c5
 
 	measure 'Tempo Médio de Entrega' = CALCULATE ( AVERAGE ( orders[dias_entrega] ), orders[pedido_valido] = TRUE () )
-		formatString: 0.00
+		formatString: 0.0" dias"
 		displayFolder: Entrega e Clientes
+		lineageTag: a34fa01e-89a2-41ab-91dd-883c34af568d
 
 	measure 'Tempo Mediano de Entrega' = CALCULATE ( MEDIAN ( orders[dias_entrega] ), orders[pedido_valido] = TRUE () )
 		formatString: 0.00
 		displayFolder: Entrega e Clientes
+		lineageTag: 365894f1-5a0f-4f69-a2a1-6850e070dde8
 
-	measure 'Avaliações' = CALCULATE ( COUNTROWS ( order_reviews ), orders[pedido_valido] = TRUE () )
+	measure Avaliações = CALCULATE ( COUNTROWS ( order_reviews ), orders[pedido_valido] = TRUE () )
 		formatString: #,0
 		displayFolder: Entrega e Clientes
+		lineageTag: 8589a439-788f-41ff-9b51-1b10b213ba21
 
 	measure 'Avaliação Média' = CALCULATE ( AVERAGE ( order_reviews[review_score] ), orders[pedido_valido] = TRUE () )
 		formatString: 0.00
 		displayFolder: Entrega e Clientes
+		lineageTag: 6afb7982-1967-483c-a947-547907c58cc5
 
-	measure '% das Avaliações' = ```
+	measure '% das Avaliações' =
 			// Percentual de cada nota; ALLSELECTED mantem os filtros de pagina e remove so o da nota
 			DIVIDE (
 			    [Avaliações],
 			    CALCULATE ( [Avaliações], ALLSELECTED ( order_reviews[review_score] ) )
 			)
-			```
 		formatString: 0.0%
 		displayFolder: Entrega e Clientes
+		lineageTag: e4bde029-34a1-42d0-ac5b-eefe8e199601
 
 	measure 'Clientes Únicos' = CALCULATE ( DISTINCTCOUNT ( orders[cliente_pessoa] ), orders[pedido_valido] = TRUE () )
 		formatString: #,0
 		displayFolder: Entrega e Clientes
+		lineageTag: 2c02a16b-4247-4ada-bc20-01226b9bf1e8
 
-	measure 'Clientes Recorrentes' = ```
+	measure 'Clientes Recorrentes' =
 			CALCULATE (
 			    DISTINCTCOUNT ( orders[cliente_pessoa] ),
 			    orders[pedido_valido] = TRUE (),
 			    orders[pedidos_validos_do_cliente] >= 2
 			)
-			```
 		formatString: #,0
 		displayFolder: Entrega e Clientes
+		lineageTag: c2335c29-d0ce-4ee8-9f7c-6c7d7aad3e6e
 
 	measure 'Clientes Recorrentes %' = DIVIDE ( [Clientes Recorrentes], [Clientes Únicos] )
 		formatString: 0.00%
 		displayFolder: Entrega e Clientes
+		lineageTag: 83bbae53-367c-499a-afc5-a1cb709bafd1
+
+	measure 'Pedidos (texto)' = FORMAT ( [Número de Pedidos], "#,0", "pt-BR" )
+		lineageTag: f9fddefb-da22-4a2f-be37-dfd38a6390ac
+
+	measure 'Itens vendidos (texto)' = FORMAT ( [Produtos Vendidos], "#,0", "pt-BR" )
+		lineageTag: 4a082e0e-58a8-45a5-a898-93dce906bb03
+
+	measure '% Atraso (mín. 100)' =
+			
+			IF ( [Pedidos Entregues] >= 100, [% Pedidos Atrasados] )
+		formatString: 0.0%
+		displayFolder: Entrega e Clientes
+		lineageTag: 487cf1c0-5f9b-4fcf-a2a3-48ea05e0bdd9
+
+	measure '% Atraso (top 10)' =
+			// Valor so para os 10 estados de maior atraso (os demais ficam em branco e saem do grafico)
+			VAR _v = [% Atraso (mín. 100)]
+			VAR _rank = RANKX ( ALLSELECTED ( customers[customer_state] ), [% Atraso (mín. 100)], , DESC, DENSE )
+			RETURN
+			    IF ( NOT ISBLANK ( _v ) && _rank <= 10, _v )
+		formatString: 0.0%
+		displayFolder: Entrega e Clientes
+		lineageTag: 0e2b16c9-c51a-5c86-9bd2-24fc0f878e14
+
+	measure 'Avaliação Média (entregues)' = CALCULATE ( [Avaliação Média], KEEPFILTERS ( orders[situacao_entrega] IN { "No prazo", "Atrasado" } ) )
+		formatString: 0.00
+		displayFolder: Entrega e Clientes
+		lineageTag: 4a843cc9-d6f7-5acf-8113-fbed5d8401d4
 
 	column Coluna
 		dataType: string
 		isHidden
+		lineageTag: 2b47770e-d395-4c24-9515-33f352ba1543
 		summarizeBy: none
 		sourceColumn: Coluna
 
@@ -158,3 +205,4 @@ table _Medidas
 					Source
 
 	annotation PBI_ResultType = Table
+

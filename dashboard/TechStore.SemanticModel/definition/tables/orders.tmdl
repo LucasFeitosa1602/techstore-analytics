@@ -88,7 +88,7 @@ table orders
 
 		annotation UnderlyingDateTimeDataType = Date
 
-	column pedido_valido = ```
+	column pedido_valido =
 			// Regra central: status que vira venda + janela de analise + pelo menos 1 item
 			VAR _status_ok = NOT ( orders[order_status] IN { "canceled", "unavailable" } )
 			VAR _na_janela =
@@ -97,59 +97,64 @@ table orders
 			VAR _tem_itens = COUNTROWS ( RELATEDTABLE ( order_items ) ) > 0
 			RETURN
 			    _status_ok && _na_janela && _tem_itens
-			```
 		dataType: boolean
+		lineageTag: 8ecbccbe-ade3-4cd4-b079-c7911c6eaa7a
 		summarizeBy: none
 
-	column cliente_pessoa = ```
+	column cliente_pessoa =
 			// customer_id muda a cada pedido; customer_unique_id identifica a pessoa
 			RELATED ( customers[customer_unique_id] )
-			```
 		dataType: string
+		lineageTag: bd4a0a52-e9e9-48f9-809c-40c3ee7bc4d1
 		summarizeBy: none
 
-	column dias_entrega = ```
+	column dias_entrega =
 			// So pedidos entregues e com data de entrega; os demais ficam em branco
 			IF (
 			    orders[order_status] = "delivered"
 			        && NOT ISBLANK ( orders[order_delivered_customer_date] ),
 			    CONVERT ( orders[order_delivered_customer_date] - orders[order_purchase_timestamp], DOUBLE )
 			)
-			```
 		dataType: double
 		formatString: 0.00
+		lineageTag: 00b715f2-fc29-47e5-8d34-c51893872a85
 		summarizeBy: none
 
-	column atrasado = ```
+	column atrasado =
 			// Atraso por DIA: entregar no dia previsto nao e atraso
 			IF (
 			    NOT ISBLANK ( orders[dias_entrega] ),
 			    INT ( orders[order_delivered_customer_date] ) > INT ( orders[order_estimated_delivery_date] )
 			)
-			```
 		dataType: boolean
+		lineageTag: 90d44277-3b4e-4d51-a23d-a7c1e706bf82
 		summarizeBy: none
 
-	column situacao_entrega = ```
+	column situacao_entrega =
+			// Usa dias_entrega (em branco para quem nao foi entregue) e compara por DIA
 			IF (
-			    ISBLANK ( orders[atrasado] ),
+			    ISBLANK ( orders[dias_entrega] ),
 			    BLANK (),
-			    IF ( orders[atrasado], "Atrasado", "No prazo" )
+			    IF (
+			        INT ( orders[order_delivered_customer_date] ) > INT ( orders[order_estimated_delivery_date] ),
+			        "Atrasado",
+			        "No prazo"
+			    )
 			)
-			```
 		dataType: string
+		lineageTag: c9d328d9-d044-4ecb-9013-2661ce523a18
 		summarizeBy: none
 
-	column pedidos_validos_do_cliente = ```
+	column pedidos_validos_do_cliente =
 			// Quantos pedidos validos a mesma pessoa tem (para achar os recorrentes)
 			CALCULATE (
 			    COUNTROWS ( orders ),
 			    ALLEXCEPT ( orders, orders[cliente_pessoa] ),
 			    orders[pedido_valido] = TRUE ()
 			)
-			```
 		dataType: int64
 		formatString: 0
+		lineageTag: e50bd3aa-841a-40fe-bb76-18cede0114dc
 		summarizeBy: none
 
 	partition orders = m

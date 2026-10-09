@@ -39,12 +39,21 @@ table calendario
 		summarizeBy: none
 		sourceColumn: Ano-Mês
 
+	column Mês/Ano = FORMAT ( calendario[Date], "mmm/yyyy", "pt-BR" )
+		lineageTag: a24ccbbf-d452-4540-bcfc-a9c76df9148e
+		summarizeBy: none
+		sortByColumn: Ano-Mês
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = Automatic
+
 	partition calendario = m
 		mode: import
 		source =
 				let
-					StartDate = #date(2016, 9, 1),
-					EndDate = #date(2018, 10, 31),
+					StartDate = #date(2017, 1, 1),
+					EndDate = #date(2018, 8, 31),
 					Dates = List.Dates(StartDate, Duration.Days(EndDate - StartDate) + 1, #duration(1, 0, 0, 0)),
 					AsTable = Table.FromList(Dates, Splitter.SplitByNothing(), {"Date"}, null, ExtraValues.Error),
 					Typed = Table.TransformColumnTypes(AsTable, {{"Date", type date}}),
@@ -56,4 +65,6 @@ table calendario
 					YearMonth
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegação
 
