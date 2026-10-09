@@ -5,7 +5,7 @@ Este documento explica **como o dashboard foi pensado**: a estrutura das página
 > KPIs: [`kpis.md`](kpis.md) · Perguntas de negócio: [`business_questions.md`](business_questions.md) · Dicionário de dados: [`data_dictionary.md`](data_dictionary.md)
 
 **Ferramenta:** Power BI Desktop, lendo os CSVs tratados de `data/processed/` (projeto pronto em [`../dashboard/`](../dashboard/README.md))  
-**Status:** modelo de design definido; o painel é construído em cima dele e ajustado por iteração.
+**Status:** concluído. O painel foi construído a partir deste modelo (capturas na seção 9) e validado contra um recálculo independente (veja [`qa_signoff.md`](qa_signoff.md)).
 
 ---
 
@@ -216,12 +216,12 @@ Mais detalhes sobre a limpeza em [`data_cleaning.md`](data_cleaning.md).
 
 ## 9. Imagens do painel
 
-<!--
-Adicione aqui as capturas de tela do painel quando ele estiver pronto.
-Sugestão: salvar em docs/images/ e referenciar assim:
+**Página 1 — Vendas**
 
 ![Página 1 — Vendas](images/pagina1_vendas.png)
-![Página 2 — Entrega e Clientes](images/pagina2_entrega_clientes.png)
--->
 
-_Em breve._
+**Página 2 — Entrega e Clientes**
+
+![Página 2 — Entrega e Clientes](images/pagina2_entrega_clientes.png)
+
+**Modelos de referência** usados como guia antes de montar o painel: [`modelo_pagina1_vendas.png`](images/modelo_pagina1_vendas.png) e [`modelo_pagina2_entrega_clientes.png`](images/modelo_pagina2_entrega_clientes.png).

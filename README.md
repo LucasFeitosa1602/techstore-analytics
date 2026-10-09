@@ -4,7 +4,7 @@ Projeto de análise de dados de ponta a ponta sobre o e-commerce brasileiro **Ol
 
 ```
 CSVs brutos ──► Limpeza (Python/pandas) ──► CSVs tratados ──► Dashboard (Power BI)
-     ✅                  ✅                       ✅                  🔜
+     ✅                  ✅                       ✅                  ✅
 ```
 
 ## 🎯 Objetivo
@@ -46,8 +46,9 @@ Dicionário completo e relacionamentos em [`docs/data_dictionary.md`](docs/data_
 | Documentação de negócio (dicionário, KPIs, perguntas) | ✅ Concluído |
 | Profiling e limpeza dos 9 datasets | ✅ Concluído |
 | Design do dashboard (estilo e modelo das 2 páginas) | ✅ Concluído |
-| Projeto Power BI com modelo de dados, relacionamentos e tema | ✅ Criado (ainda não aberto no Power BI Desktop) |
-| Medidas DAX e gráficos do dashboard | 🔜 Em construção |
+| Projeto Power BI (modelo, relacionamentos, tema e 29 medidas DAX) | ✅ Concluído |
+| Dashboard de 2 páginas | ✅ Concluído |
+| Validação (QA): números do painel x recálculo independente em SQL | ✅ 38 de 38 valores conferem (veja [`docs/qa_signoff.md`](docs/qa_signoff.md)) |
 
 > O Power BI lê os CSVs de `data/processed/` diretamente: não há banco de dados.
 
@@ -73,12 +74,37 @@ Decisões, validações e pontos de atenção em [`docs/data_cleaning.md`](docs/
 
 Dashboard de 2 páginas no Power BI: **Vendas** e **Entrega e Clientes**. O estilo, o modelo de cada página e o motivo de cada gráfico estão em [`docs/dashboard_design.md`](docs/dashboard_design.md).
 
-O projeto do Power BI está em [`dashboard/`](dashboard/README.md): abra `dashboard/TechStore.pbip` no Power BI Desktop. Ele já traz as tabelas lidas de `data/processed/`, os relacionamentos, o tema e as 2 páginas em branco.
+O projeto do Power BI está em [`dashboard/`](dashboard/README.md): abra `dashboard/TechStore.pbip` no Power BI Desktop. Ele traz as tabelas lidas de `data/processed/`, os relacionamentos, o tema, as medidas DAX e as 2 páginas.
 
-<!-- Imagens do painel: salvar em docs/images/ e adicionar aqui, por exemplo:
+### Página 1 — Vendas
+
 ![Página 1 — Vendas](docs/images/pagina1_vendas.png)
+
+### Página 2 — Entrega e Clientes
+
 ![Página 2 — Entrega e Clientes](docs/images/pagina2_entrega_clientes.png)
--->
+
+## 💡 Principais resultados
+
+Considerando os pedidos válidos de **jan/2017 a ago/2018** (sem cancelados e indisponíveis):
+
+- **Receita de R$ 15,68 milhões** em 97.905 pedidos, com ticket médio de R$ 160,19. O frete representa 14,2% da receita.
+- **Crescimento forte:** a receita de jan–ago/2018 é 140% maior que a de jan–ago/2017. O pico foi em novembro/2017 (R$ 1,17 milhão), mês da Black Friday: 24/11/2017 foi o dia com mais pedidos.
+- **Concentração geográfica:** São Paulo responde por 41,9% dos pedidos; os 3 maiores estados somam 66,5%.
+- **Categorias:** Beleza e Saúde lidera em receita (R$ 1,43 milhão). As 5 maiores categorias somam 39,3% da receita.
+- **Pagamento:** o cartão de crédito está em 77% dos pedidos.
+- **Entrega:** 12,5 dias em média (o prazo prometido é de 23,6) e **6,79% dos pedidos chegam atrasados**, concentrados no Nordeste (Alagoas 21,5%, Maranhão 17,5%). O pior mês foi março/2018, com 19,0% de atraso.
+- **Satisfação:** nota média de 4,12. Pedidos atrasados recebem **nota 2,27**, contra **4,29** dos entregues no prazo.
+- **Fidelização baixa:** só 3,03% dos clientes compraram mais de uma vez.
+
+## ⚠️ Limitações e cuidados
+
+- **Associação não é causa.** A queda da nota nos pedidos atrasados é uma relação observada nos dados. Produto e qualidade também influenciam a avaliação, e este projeto não testa o efeito isolado do atraso.
+- **Período fixo.** O dataset é um histórico de 2016 a 2018. Foram usados apenas jan/2017 a ago/2018, porque 2016 e set–out/2018 têm quase nenhum pedido.
+- **Sem custo nem margem.** A receita é `price + freight_value`; o dataset não traz custos, então não há análise de lucro.
+- **Sem nome de produto.** Os produtos aparecem por categoria; o dataset não tem o nome do produto.
+- **Dados de apoio.** 279 clientes e 7 vendedores têm CEP sem correspondência na base de geolocalização (0,3% dos clientes). Eles não afetam os KPIs, só mapas por CEP.
+- **Regras de negócio:** pedido válido, janela de tempo, receita e atraso por dia estão definidos em [`docs/kpis.md`](docs/kpis.md).
 
 ## 🗂️ Estrutura do projeto
 
@@ -94,7 +120,9 @@ TechStore Analytics/
 │   ├── data_cleaning.md      # o que foi feito na limpeza e por quê
 │   ├── business_questions.md # perguntas de negócio
 │   ├── kpis.md               # KPIs do dashboard
-│   └── dashboard_design.md   # estilo e modelo das páginas do dashboard
+│   ├── dashboard_design.md   # estilo e modelo das páginas do dashboard
+│   ├── qa_signoff.md         # validação final dos números e do projeto
+│   └── images/               # capturas do dashboard
 ├── requirements.txt
 └── README.md
 ```
@@ -125,12 +153,16 @@ Execute os notebooks da pasta `notebooks/` na ordem numérica. O `01` precisa ro
 - **Python** (pandas) e **Jupyter** para profiling e limpeza
 - **Power BI** (Power Query e DAX) para o modelo e o dashboard
 
-## 🔜 Próximos passos
+## 🔭 Ideias de evolução
 
-1. Abrir o projeto no Power BI Desktop, atualizar os dados e conferir o modelo.
-2. Definir as regras dos KPIs: filtro de status dos pedidos e janela de tempo (sugestão: 2017-01 a 2018-08).
-3. Criar as medidas DAX e os gráficos das 2 páginas.
-4. Adicionar as imagens do painel ao README e documentar os insights.
+- Mapa de vendas e de atraso por CEP, usando a tabela `olist_geolocation_zip_clean.csv`, que já está pronta.
+- Análise de coorte e de retenção, para entender melhor a baixa recompra (3,03%).
+- Testar de forma isolada o efeito do atraso na nota, controlando por categoria e vendedor.
+- Publicar o dashboard no Power BI Service.
+
+## 📜 Licença
+
+Distribuído sob a licença MIT. Veja o arquivo [`LICENSE`](LICENSE).
 
 ## 📄 Fonte dos dados
 

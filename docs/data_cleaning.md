@@ -182,6 +182,4 @@ jupyter lab
 
 ## 8. Próximos passos
 
-1. Abrir [`dashboard/TechStore.pbip`](../dashboard/README.md) no Power BI Desktop, atualizar os dados e conferir o modelo.
-2. Criar as medidas DAX e os gráficos seguindo [`dashboard_design.md`](dashboard_design.md).
-3. Adicionar as imagens do painel ao README e documentar os insights.
+O projeto está concluído. A etapa seguinte à limpeza, o modelo e o dashboard no Power BI, está em [`dashboard/`](../dashboard/README.md) e documentada em [`dashboard_design.md`](dashboard_design.md). A validação final está em [`qa_signoff.md`](qa_signoff.md).
