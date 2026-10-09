@@ -111,6 +111,7 @@ Para aplicar a paleta, salve o bloco abaixo como `.json` e importe em *Exibiçã
 - Grade bem clara e sem linhas de eixo desnecessárias.
 - Título do gráfico diz **o que ele mostra** e a unidade (ex.: "Receita por mês (R$)").
 - Barras partem sempre do zero.
+- **Gráfico de barras com 10 categorias precisa de cerca de 250 px de altura**, porque o Power BI reserva no mínimo 20 px por barra. Com menos altura aparece uma barra de rolagem. Por isso, no painel final, os gráficos Top 10 de categorias (aba Vendas) e de estados por atraso (aba Entrega e Clientes) ficam na linha de baixo, que é mais alta, e os gráficos de poucas barras (forma de pagamento e nota média) ficam na linha de cima.
 
 ---
 
@@ -122,23 +123,24 @@ Para aplicar a paleta, salve o bloco abaixo como `.json` e importe em *Exibiçã
 ┌──────────────────────────────────────────────────────────────────┐
 │ Vendas Olist · jan/2017 a ago/2018    [Período] [Estado] [Categoria]│
 ├───────────┬───────────┬───────────┬───────────┬──────────────────┤
-│ Receita   │ Pedidos   │ Ticket    │ Frete     │ Itens · Categoria│
-│ Total ▲%  │           │ Médio     │ Médio     │ líder · Pagamento│
+│ Receita   │ Pedidos   │ Ticket    │ Frete     │ Itens vendidos   │
+│ Total     │           │ Médio     │ Médio     │                  │
 ├───────────┴───────────┴───────────┴───┬───────┴──────────────────┤
-│  Receita por mês (linha)              │ Top 10 categorias        │
-│                                       │ por receita (barras)     │
+│  Receita por mês (linha)              │ Forma de pagamento       │
+│                                       │ (barras)                 │
 ├───────────────────────────────────────┼──────────────────────────┤
-│  Top 10 estados por pedidos (barras)  │ Forma de pagamento       │
+│  Top 10 estados por pedidos (barras)  │ Top 10 categorias        │
+│                                       │ por receita (barras)     │
 └───────────────────────────────────────┴──────────────────────────┘
 ```
 
 | Visual | Gráfico | Campos | Motivo da escolha |
 |---|---|---|---|
-| **Receita Total** | Cartão com seta de variação vs. mês anterior | Receita Total | É o número principal: maior e no canto superior esquerdo, onde o olho começa |
-| **Pedidos, Ticket Médio, Frete Médio** | Cartões menores | Respectivas medidas | Número direto, sem necessidade de gráfico |
-| **Itens vendidos, Categoria líder, Pagamento mais usado** | Cartões de texto pequenos em uma faixa | Respectivas medidas | São KPIs de texto ou contagem simples |
-| **Receita por mês** | Linha, com o pico rotulado | Mês × Receita Total | Mostra tendência e sazonalidade. Pedidos e ticket médio ficam no tooltip, **sem eixo duplo**, que sugere correlação onde não há |
-| **Top 10 categorias** | Barras horizontais, uma cor, valores nas barras | Categoria (em inglês) × Receita Total | Nomes longos cabem melhor em barra horizontal, e a ordenação mostra o ranking |
+| **Receita Total** | Cartão grande, com legenda curta abaixo do valor | Receita Total | É o número principal: maior e no canto superior esquerdo, onde o olho começa |
+| **Pedidos, Ticket Médio, Frete Médio** | Cartões | Respectivas medidas | Número direto, sem necessidade de gráfico |
+| **Itens vendidos** | Cartão | Produtos Vendidos | Contagem simples. A categoria líder e a forma de pagamento mais usada aparecem nos gráficos de barras (as medidas continuam no modelo) |
+| **Receita por mês** | Linha, com marcadores nos pontos | Mês × Receita Total | Mostra tendência e sazonalidade. Pedidos e ticket médio ficam no tooltip, **sem eixo duplo**, que sugere correlação onde não há |
+| **Top 10 categorias** | Barras horizontais, uma cor, valores nas barras | Categoria (tradução em inglês) × Receita Total | Nomes longos cabem melhor em barra horizontal, e a ordenação mostra o ranking |
 | **Top 10 estados** | Barras horizontais | Estado do cliente × Número de Pedidos | Ranking mais preciso que mapa; um estado (SP) concentra cerca de 40% dos pedidos |
 | **Forma de pagamento** | Barras horizontais, em % dos pedidos | Tipo de pagamento × % dos pedidos | Uma forma domina (cartão de crédito, cerca de 77%), e em barras isso aparece melhor do que em rosca |
 
@@ -155,17 +157,20 @@ Para aplicar a paleta, salve o bloco abaixo como `.json` e importe em *Exibiçã
 │ Tempo médio│ % Pedidos  │ Avaliação  │ Clientes   │ Clientes     │
 │ de entrega │ atrasados  │ média      │ únicos     │ recorrentes %│
 ├────────────┴────────────┴────────────┼────────────┴──────────────┤
-│ % atrasados por mês (linha)          │ Top 10 estados por        │
-│                                      │ % de atraso (barras)      │
+│ % atrasados por mês (linha)          │ Nota média: no prazo x    │
+│                                      │ atrasado (barras)         │
 ├──────────────────────────────────────┼───────────────────────────┤
-│ Nota média: no prazo x atrasado      │ Distribuição das notas 1–5│
+│ Distribuição das notas 1–5 (colunas) │ Top 10 estados por        │
+│                                      │ % de atraso (barras)      │
 └──────────────────────────────────────┴───────────────────────────┘
+
+> Os gráficos de 10 barras ficam na linha de baixo, que é mais alta: o Power BI usa no mínimo 20 px por barra e, na linha de cima, apareceria uma barra de rolagem.
 ```
 
 | Visual | Gráfico | Campos | Motivo da escolha |
 |---|---|---|---|
 | **5 cartões** | Cartão (o de atrasos com seta ou ícone de status) | Tempo Médio de Entrega, % Pedidos Atrasados, Avaliação Média, Clientes Únicos, Clientes Recorrentes % | Cada um responde uma pergunta de negócio sem esforço |
-| **% atrasados por mês** | Linha, com linha de referência na média | Mês × % atrasados | Mostra *quando* a operação quebrou. Os picos ficam em vermelho |
+| **% atrasados por mês** | Linha, com marcadores nos pontos | Mês × % atrasados | Mostra *quando* a operação quebrou (o pior mês foi março/2018, com 19,0%) |
 | **Top 10 estados por atraso** | Barras horizontais | Estado × % atrasados | Mostra *onde* agir (concentrado no Nordeste). **Filtrar por volume mínimo** (ex.: 100 pedidos entregues) para não destacar estado com poucos pedidos |
 | **Nota média: no prazo x atrasado** | Barras com 2 categorias e valores nas barras | Situação da entrega × Avaliação Média | É a mensagem mais forte da página: pedidos atrasados têm nota média por volta de 2,3 contra cerca de 4,3 no prazo |
 | **Distribuição das notas** | Colunas de 1 a 5 | Nota × % das avaliações | Mostra a forma da satisfação (a nota 5 domina) |
