@@ -15,20 +15,21 @@
 |---|---|---|
 | `qa_runner.py` nos 10 arquivos tratados (`data/processed/`) | **PASS** | 0 FAIL e 0 WARN em todos. Sem linhas duplicadas, colunas 100% nulas, infinitos ou datas futuras |
 | Notebooks (01 a 09) | **PASS** | Sem erros e todas as células executadas. O notebook 05 foi reexecutado e o CSV de saída ficou idêntico (mesmo hash) |
-| Esquema do Power BI | **PASS** | Todas as propriedades dos 32 visuais existem no esquema oficial do Desktop; medidas, colunas, sincronização e texto alternativo conferidos |
+| Esquema do Power BI | **PASS** | Propriedades dos 24 visuais de dados, medidas, colunas, sincronização e texto alternativo conferidos. As 8 caixas de texto (legendas dos cartões) são marcadas pelo validador (`general.paragraphs`), mas renderizam normalmente no Desktop |
 | Links relativos da documentação | **PASS** | Nenhum link quebrado |
 | Segredos no repositório | **PASS** | Nenhum; `.env` está no `.gitignore` e não é rastreado |
 
 ## Conferência independente dos números
 
-Todos os valores visíveis no dashboard (38) foram recalculados em SQL (SQLite), com uma lógica escrita à parte da usada no Power BI: **38 de 38 conferem**.
+Todos os valores numéricos dos gráficos e cartões (91) foram recalculados com uma lógica escrita à parte da usada no Power BI (SQL/SQLite e, na segunda rodada, pandas): **91 de 91 conferem**.
 
 | Grupo | Itens conferidos |
 |---|---|
 | KPIs (12) | Receita, pedidos, ticket, frete, itens, clientes, recorrência, tempo de entrega, atraso, avaliação, nota no prazo e atrasado |
-| Categorias | 7 maiores receitas |
-| Estados | 5 maiores em pedidos e 5 maiores em % de atraso |
+| Categorias | 10 maiores receitas |
+| Estados | 10 maiores em pedidos e 10 maiores em % de atraso (mínimo de 100 entregas) |
 | Pagamento e notas | 4 formas de pagamento e 5 notas |
+| Séries mensais (40) | Receita e % de pedidos atrasados, de jan/2017 a ago/2018 (20 meses cada) |
 | Amostra de 3 pedidos | Receita = `price + frete` e igual ao valor pago |
 
 ## Checklist manual

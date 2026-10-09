@@ -48,7 +48,7 @@ Dicionário completo e relacionamentos em [`docs/data_dictionary.md`](docs/data_
 | Design do dashboard (estilo e modelo das 2 páginas) | ✅ Concluído |
 | Projeto Power BI (modelo, relacionamentos, tema e 29 medidas DAX) | ✅ Concluído |
 | Dashboard de 2 páginas | ✅ Concluído |
-| Validação (QA): números do painel x recálculo independente em SQL | ✅ 38 de 38 valores conferem (veja [`docs/qa_signoff.md`](docs/qa_signoff.md)) |
+| Validação (QA): números do painel x recálculo independente em SQL | ✅ 91 de 91 valores conferem (veja [`docs/qa_signoff.md`](docs/qa_signoff.md)) |
 
 > O Power BI lê os CSVs de `data/processed/` diretamente: não há banco de dados.
 

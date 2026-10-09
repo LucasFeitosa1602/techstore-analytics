@@ -13,7 +13,7 @@ Todas as mudanças relevantes do projeto estão neste arquivo.
 - Documentação do tratamento de dados (`docs/data_cleaning.md`), do design do dashboard (`docs/dashboard_design.md`) e da validação final (`docs/qa_signoff.md`).
 
 ### Validação
-- 38 valores do dashboard recalculados em SQL de forma independente: todos conferem.
+- 91 valores do dashboard (cartões e gráficos) recalculados de forma independente: todos conferem.
 
 ### Corrigido durante a validação
 - Pedidos ainda não entregues eram contados como "no prazo" (% de atraso 6,67% e nota 4,25). Agora 6,79% e 4,29.

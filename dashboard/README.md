@@ -62,7 +62,7 @@ As medidas de pedidos, entrega e clientes reagem aos filtros de Estado e Períod
 
 ## Validação
 
-Os números do dashboard foram recalculados em SQL, de forma independente: **38 de 38 valores conferem**. Veja [`docs/qa_signoff.md`](../docs/qa_signoff.md). Valores de referência, sem filtros:
+Os números do dashboard foram recalculados de forma independente: **91 de 91 valores conferem**. Veja [`docs/qa_signoff.md`](../docs/qa_signoff.md). Valores de referência, sem filtros:
 
 | Medida | Valor |
 |---|---|

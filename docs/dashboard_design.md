@@ -140,7 +140,7 @@ Para aplicar a paleta, salve o bloco abaixo como `.json` e importe em *Exibiçã
 | **Pedidos, Ticket Médio, Frete Médio** | Cartões | Respectivas medidas | Número direto, sem necessidade de gráfico |
 | **Itens vendidos** | Cartão | Produtos Vendidos | Contagem simples. A categoria líder e a forma de pagamento mais usada aparecem nos gráficos de barras (as medidas continuam no modelo) |
 | **Receita por mês** | Linha, com marcadores nos pontos | Mês × Receita Total | Mostra tendência e sazonalidade. Pedidos e ticket médio ficam no tooltip, **sem eixo duplo**, que sugere correlação onde não há |
-| **Top 10 categorias** | Barras horizontais, uma cor, valores nas barras | Categoria (tradução em inglês) × Receita Total | Nomes longos cabem melhor em barra horizontal, e a ordenação mostra o ranking |
+| **Top 10 categorias** | Barras horizontais, uma cor, valores nas barras | Categoria (nome em português) × Receita Total | Nomes longos cabem melhor em barra horizontal, e a ordenação mostra o ranking |
 | **Top 10 estados** | Barras horizontais | Estado do cliente × Número de Pedidos | Ranking mais preciso que mapa; um estado (SP) concentra cerca de 40% dos pedidos |
 | **Forma de pagamento** | Barras horizontais, em % dos pedidos | Tipo de pagamento × % dos pedidos | Uma forma domina (cartão de crédito, cerca de 77%), e em barras isso aparece melhor do que em rosca |
 
