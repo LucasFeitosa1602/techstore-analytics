@@ -3,11 +3,11 @@
   "name": "c0b7c249aca5451ddfca",
   "position": {
     "x": 798.5410334346504,
-    "y": 222.73556231003042,
+    "y": 447,
     "z": 10000,
-    "height": 215.92705167173253,
+    "height": 262,
     "width": 472.7051671732523,
-    "tabOrder": 10
+    "tabOrder": 14
   },
   "visual": {
     "visualType": "barChart",
@@ -89,14 +89,14 @@
             "preferredCategoryWidth": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "20D"
                 }
               }
             },
             "innerPadding": {
               "expr": {
                 "Literal": {
-                  "Value": "15L"
+                  "Value": "20L"
                 }
               }
             },
